@@ -1,6 +1,7 @@
 "use strict";
 
 const BASE_URL = "http://numbersapi.com/";
+const BASE_URL_CARDS = "http://deckofcardsapi.com/";
 const HEADERS = {'content-type': 'application/json'}
 const $body = $('body');
 
@@ -25,19 +26,35 @@ async function showFavNumsTrivia() {
 
 }
 
-showFavNumsTrivia();
+// showFavNumsTrivia();
+
+async function showFavNumTriviaFourTimes(num) {
+  const response1 =  axios.get(`${BASE_URL}${num}/trivia?json`);
+  const response2 =  axios.get(`${BASE_URL}${num}/trivia?json`);
+  const response3 =  axios.get(`${BASE_URL}${num}/trivia?json`);
+  const response4 =  axios.get(`${BASE_URL}${num}/trivia?json`);
+
+  let responses = [await response1, await response2, await response3, await response4];
+  for(let response of responses){
+    console.log(response.data.text);
+  }
+  
+}
+
+// showFavNumTriviaFourTimes(10);
+
+// ************************** DECK OF CARDS API EXERCISE ****************************
+
+async function drawAndShuffleCard() {
+  const shuffleResponse = await axios.get(`${BASE_URL_CARDS}api/deck/new/shuffle/?deck_count=1`);
+  // const shuffleResponse2 = await axios.get(`${BASE_URL_CARDS}api/deck/new/draw/?count=1`);
+  const deckId = shuffleResponse.data.deck_id;
+  const drawCard = await axios.get(`${BASE_URL_CARDS}api/deck/${deckId}/draw/?count=1`);
+  console.log("shuffle response: ", drawCard.data.cards);
+}
 
 
-
-
-
-
-
-
-
-
-
-
+drawAndShuffleCard();
 
 
 
