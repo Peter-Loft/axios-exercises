@@ -4,6 +4,7 @@ const BASE_URL = "http://numbersapi.com/";
 const BASE_URL_CARDS = "http://deckofcardsapi.com/";
 const HEADERS = { 'content-type': 'application/json' }
 const $body = $('body');
+let DECK_ID = "new";
 
 
 // async function showFavNumTrivia(num) {
@@ -54,19 +55,26 @@ const $body = $('body');
 //   console.log("shuffle response: ", drawCard.data.cards);
 // }
 // drawAndShuffleCard();
-
+setUp();
 
 async function prepareDeck() {
-  let resp = await axios.get(`${BASE_URL_CARDS}api/deck/new/shuffle/?deck_count=1`);
-  let deckId = resp.data.deck_id;
-  return deckId;
+
+  if(DECK_ID === 'new'){
+    let resp = await axios.get(`${BASE_URL_CARDS}api/deck/new/shuffle/?deck_count=1`);
+    DECK_ID = resp.data.deck_id;
+  } else{
+    let card = drawCard(DECK_ID);
+    let $cardImage = $("<img>").attr("src", card.data.cards[0].image);
+    $("#drawn-cards").append($cardImage);
+  }
+  
+  // return deckId;
 }
 
 
 async function drawCard(deckId) {
   const card = await axios.get(`${BASE_URL_CARDS}api/deck/${deckId}/draw/?count=1`);
-
-
+  return card;
 }
 
 
@@ -74,13 +82,12 @@ async function setUp() {
 
   $("#drawn-cards").empty();
   // prepare deck
-  let deckId = await prepareDeck();
-  let url = `${BASE_URL_CARDS}api/deck/${deckId}/draw/?count=1`;
-  
+  await prepareDeck();
+  // let url = `${BASE_URL_CARDS}api/deck/${deckId}/draw/?count=1`;
   
 }
 
-$body.on("sumbit", drawCard);
+$body.on("sumbit", prepareDeck);
 
 
 // promise to be resolved (hopefully)
